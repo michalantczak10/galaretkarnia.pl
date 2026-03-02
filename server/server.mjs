@@ -46,20 +46,21 @@ const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '..');
 
 // Middleware
-app.use(express.json());
-
-// CORS - explicit handling for all origins
+// CORS - explicit handling for all origins (MUST be before routes and json middleware)
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Max-Age', '3600');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    res.writeHead(200);
+    res.end();
+    return;
   }
   next();
 });
+
+app.use(express.json());
 
 // Serve static files from project root
 app.use(express.static(projectRoot));

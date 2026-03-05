@@ -72,7 +72,7 @@ Kliknij **"Create Web Service"**
 1. Pobierze kod
 2. Zainstaluje zależności (`npm install`)
 3. Uruchomi serwer
-4. Wyświetli URL: `https://galaretkarnia-api.onrender.com` (lub bardziej dziwny)
+4. Wyświetli URL: `https://galaretkarnia.onrender.com` (lub bardziej dziwny)
 
 **Zapisz ten URL!** Będzie w kroku 3.
 
@@ -80,7 +80,7 @@ Kliknij **"Create Web Service"**
 
 Otwórz w przeglądarce:
 ```
-https://galaretkarnia-api.onrender.com/api/health
+https://galaretkarnia.onrender.com/api/health
 ```
 
 Powinna być odpowiedź:
@@ -123,7 +123,7 @@ cd "c:\Users\Michał Antczak\OneDrive\Projekty\galaretkarnia.pl"
 1. Otwórz `app.ts` (linia ~166)
 2. Zmień:
 ```typescript
-const API_URL = "https://galaretkarnia-api.onrender.com/api/orders";
+const API_URL = "https://galaretkarnia.onrender.com/api/orders";
 ```
 Na URL z kroku 2.5 (jeśli jest inny).
 

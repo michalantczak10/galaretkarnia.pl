@@ -125,7 +125,7 @@ PORT=10000
 
 Po deploymencie zobaczysz URL:
 ```
-https://galaretkarnia-api.onrender.com
+https://galaretkarnia.onrender.com
 ```
 
 ✅ **Zapisz ten URL - będzie potrzebny w kroku 3!**
@@ -134,7 +134,7 @@ https://galaretkarnia-api.onrender.com
 
 Otwórz w przeglądarce:
 ```
-https://galaretkarnia-api.onrender.com/api/health
+https://galaretkarnia.onrender.com/api/health
 ```
 
 Powinieneś zobaczyć:
@@ -152,7 +152,7 @@ Powinieneś zobaczyć:
 2. Znajdź linię z `API_URL`
 3. Zmień na URL z Render:
 ```typescript
-const API_URL = "https://galaretkarnia-api.onrender.com/api/orders";
+const API_URL = "https://galaretkarnia.onrender.com/api/orders";
 ```
 
 4. Skompiluj:

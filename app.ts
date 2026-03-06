@@ -264,6 +264,8 @@ const renderLastOrderReference = () => {
 
   const savedPaymentMethod: PaymentMethod =
     lastOrder.paymentMethod === "blik" ? "blik" : "bank_transfer";
+  const isBlikPayment = savedPaymentMethod === "blik";
+  const transferTitleRow = lastOrderTransferTitle.closest("p");
 
   lastOrderId.textContent = lastOrder.orderRef;
   lastOrderPaymentMethod.textContent = getPaymentMethodLabel(savedPaymentMethod);
@@ -271,6 +273,10 @@ const renderLastOrderReference = () => {
   lastOrderPaymentTarget.textContent = lastOrder.paymentTarget || getPaymentTargetText(savedPaymentMethod);
   lastOrderPhoneSuffix.textContent = lastOrder.phoneSuffix;
   lastOrderLocker.textContent = lastOrder.parcelLockerCode;
+  if (transferTitleRow) {
+    transferTitleRow.hidden = isBlikPayment;
+  }
+  copyTransferTitleBtn.textContent = isBlikPayment ? "Kopiuj numer BLIK" : "Kopiuj tytuł płatności";
   lastOrderCard.hidden = false;
 };
 
@@ -366,10 +372,11 @@ const handleCheckoutSubmit = async (event: SubmitEvent) => {
     const paymentTarget = data.paymentTarget || getPaymentTargetText(selectedPaymentMethod);
     const paymentMethodLabel = getPaymentMethodLabel(selectedPaymentMethod);
 
-    setCheckoutMessage(
-      `✅ Zamówienie zapisane.<br><strong style="font-size: 1.2em;">Numer: ${orderRef}</strong><br><small>Metoda: ${paymentMethodLabel}. Realizacja po zaksięgowaniu wpłaty. Tytuł płatności: ${transferTitle}</small>`,
-      false
-    );
+    const paymentMessage = selectedPaymentMethod === "blik"
+      ? `✅ Zamówienie zapisane.<br><strong style="font-size: 1.2em;">Numer: ${orderRef}</strong><br><small>Metoda: ${paymentMethodLabel}. Realizacja po zaksięgowaniu wpłaty. Numer BLIK: ${paymentConfig.blikPhone}</small>`
+      : `✅ Zamówienie zapisane.<br><strong style="font-size: 1.2em;">Numer: ${orderRef}</strong><br><small>Metoda: ${paymentMethodLabel}. Realizacja po zaksięgowaniu wpłaty. Tytuł płatności: ${transferTitle}</small>`;
+
+    setCheckoutMessage(paymentMessage, false);
     showToast("Zamówienie przyjęte!");
 
     saveLastOrderReference({
@@ -621,18 +628,23 @@ openParcelSearchBtn.addEventListener("click", () => {
 });
 
 copyTransferTitleBtn.addEventListener("click", async () => {
-  const value = lastOrderTransferTitle.textContent?.trim();
+  const lastOrder = loadLastOrderReference();
+  const isBlikPayment = lastOrder?.paymentMethod === "blik";
+  const value = isBlikPayment
+    ? lastOrderPaymentTarget.textContent?.trim()
+    : lastOrderTransferTitle.textContent?.trim();
+
   if (!value || value === "-") {
-    showToast("Brak tytułu przelewu do skopiowania");
+    showToast(isBlikPayment ? "Brak numeru BLIK do skopiowania" : "Brak tytułu płatności do skopiowania");
     return;
   }
 
   try {
     await navigator.clipboard.writeText(value);
-    showToast("Skopiowano tytuł przelewu");
+    showToast(isBlikPayment ? "Skopiowano numer BLIK" : "Skopiowano tytuł płatności");
   } catch (error) {
-    console.error("Nie udało się skopiować tytułu przelewu", error);
-    showToast("Nie udało się skopiować tytułu");
+    console.error("Nie udało się skopiować danych płatności", error);
+    showToast("Nie udało się skopiować danych");
   }
 });
 

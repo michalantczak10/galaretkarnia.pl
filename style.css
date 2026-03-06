@@ -378,34 +378,34 @@ button:active {
 
 /* ===== MINI KOSZYK ===== */
 .cart-dock {
-  width: min(1200px, calc(100% - 80px));
-  margin: 24px auto 16px;
-}
-
-.mini-cart {
   position: sticky;
   top: 12px;
+  width: min(1200px, calc(100% - 80px));
+  margin: 24px auto 16px;
+  z-index: 995;
   background: var(--color-white);
   padding: 18px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition);
+}
+
+.cart-dock:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.mini-cart {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
-  z-index: 995;
-  transition: transform var(--transition);
-}
-
-.mini-cart:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-.mini-cart:focus {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 2px;
+  transition: none;
 }
 
 .mini-cart-title {
@@ -1013,6 +1013,8 @@ button:active {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     padding: 0 25px;
+    position: relative;
+    top: 0;
   }
   
   .hero {
@@ -1099,11 +1101,8 @@ button:active {
   }
   
   .mini-cart {
-    position: relative;
     margin: 0;
     max-width: 100%;
-    top: 0;
-    right: 0;
   }
   
   #cartList {

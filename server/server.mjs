@@ -97,6 +97,7 @@ const PAYMENT_CONFIG = {
 };
 
 const FREE_DELIVERY_THRESHOLD = Number(process.env.FREE_DELIVERY_THRESHOLD || 50);
+const DELIVERY_COST = Number(process.env.DELIVERY_COST || 15);
 
 const PAYMENT_METHODS = ['bank_transfer', 'blik'];
 
@@ -121,7 +122,10 @@ app.get('/api/payment-config', (req, res) => {
     cart: {
       freeDeliveryThreshold: Number.isFinite(FREE_DELIVERY_THRESHOLD) && FREE_DELIVERY_THRESHOLD > 0
         ? FREE_DELIVERY_THRESHOLD
-        : 50
+        : 50,
+      deliveryCost: Number.isFinite(DELIVERY_COST) && DELIVERY_COST >= 0
+        ? DELIVERY_COST
+        : 15
     }
   });
 });
@@ -129,7 +133,7 @@ app.get('/api/payment-config', (req, res) => {
 // POST /api/orders - Accept order, save to DB and send email to owner
 app.post('/api/orders', async (req, res) => {
   try {
-    const { phone, parcelLockerCode, notes, items, total, paymentMethod, createOptionalAccount, optionalAccountEmail } = req.body;
+    const { phone, parcelLockerCode, notes, items, productsTotal, deliveryCost, total, paymentMethod, createOptionalAccount, optionalAccountEmail } = req.body;
 
     // Validation
     if (!phone || !isPhoneValid(phone)) {
@@ -168,6 +172,8 @@ app.post('/api/orders', async (req, res) => {
       parcelLockerCode: normalizedParcelLockerCode,
       notes: notes || '',
       items,
+      productsTotal: productsTotal || 0,
+      deliveryCost: deliveryCost !== undefined ? deliveryCost : 0,
       total,
       paymentMethod: selectedPaymentMethod,
       paymentStatus: 'oczekiwanie-na-wplate',
@@ -222,7 +228,11 @@ app.post('/api/orders', async (req, res) => {
         <h3>Pozycje:</h3>
         <pre>${itemsText}</pre>
         <hr>
-        <p><strong>📌 Do zapłaty:</strong> ${total} zł</p>
+        <h3>Podsumowanie kosztów:</h3>
+        <p><strong>🛒 Produkty (galaretki):</strong> ${productsTotal || total} zł</p>
+        <p><strong>📦 Dostawa (InPost Paczkomat):</strong> ${deliveryCost === 0 ? '<strong>GRATIS!</strong>' : `${deliveryCost} zł`}</p>
+        <p style="border-top: 2px solid #333; padding-top: 8px; margin-top: 8px;"><strong>📌 RAZEM DO ZAPŁATY:</strong> <span style="font-size: 20px; color: #d32f2f;">${total} zł</span></p>
+        <hr>
         <p><strong>💳 Płatność:</strong> ${selectedPaymentMethod === 'blik' ? 'BLIK na telefon' : 'przelew tradycyjny'} (oczekiwanie na zaksięgowanie)</p>
         <p><strong>🏦 Dane płatności:</strong> ${paymentTarget}</p>
         <hr>

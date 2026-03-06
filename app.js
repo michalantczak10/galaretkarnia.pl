@@ -87,6 +87,7 @@ const STORAGE_KEY = "galaretkarnia_cart";
 const ORDER_REF_STORAGE_KEY = "galaretkarnia_last_order_ref";
 const TOAST_DURATION = 2000;
 let freeDeliveryThreshold = 50;
+let deliveryCost = 15;
 let paymentConfig = {
     accountNumber: "60 1140 2004 0000 3102 4831 8846",
     accountHolder: "Galaretkarnia",
@@ -134,6 +135,9 @@ const scrollToCheckout = () => {
     checkoutSection?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 const getCartTotalPrice = () => cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+const getDeliveryCost = (productsTotal) => {
+    return productsTotal >= freeDeliveryThreshold ? 0 : deliveryCost;
+};
 const formatOrderRef = (orderId) => orderId.slice(-8).toUpperCase();
 const createTransferTitle = (orderRef) => `Opłata za zamówienie nr: ${orderRef}`;
 const getPaymentMethodLabel = (method) => method === "blik" ? "BLIK na telefon" : "Przelew tradycyjny";
@@ -175,9 +179,15 @@ const loadPaymentConfig = async () => {
             const candidate = Number(data.cart.freeDeliveryThreshold);
             if (Number.isFinite(candidate) && candidate > 0) {
                 freeDeliveryThreshold = candidate;
-                renderCart();
             }
         }
+        if (data?.cart?.deliveryCost !== undefined) {
+            const candidate = Number(data.cart.deliveryCost);
+            if (Number.isFinite(candidate) && candidate >= 0) {
+                deliveryCost = candidate;
+            }
+        }
+        renderCart();
     }
     catch (error) {
         console.error("Nie udało się pobrać danych płatności", error);
@@ -242,7 +252,18 @@ const renderCheckoutSummary = () => {
         row.textContent = `${item.name} — ${item.qty} słoik(ów) × ${item.price} zł`;
         checkoutSummaryList.appendChild(row);
     });
-    checkoutTotal.textContent = getCartTotalPrice().toString();
+    const productsTotal = getCartTotalPrice();
+    const actualDeliveryCost = getDeliveryCost(productsTotal);
+    const totalWithDelivery = productsTotal + actualDeliveryCost;
+    // Dodaj podsumowanie kosztów
+    const summaryBreakdown = document.createElement("div");
+    summaryBreakdown.className = "checkout-cost-breakdown";
+    summaryBreakdown.innerHTML = `
+    <p class="checkout-summary-row"><strong>Produkty (galaretki):</strong> ${productsTotal} zł</p>
+    <p class="checkout-summary-row"><strong>Dostawa (InPost):</strong> ${actualDeliveryCost === 0 ? '<strong>Gratis!</strong>' : `${actualDeliveryCost} zł`}</p>
+  `;
+    checkoutSummaryList.appendChild(summaryBreakdown);
+    checkoutTotal.textContent = totalWithDelivery.toString();
 };
 const handleCheckoutSubmit = async (event) => {
     event.preventDefault();
@@ -277,6 +298,9 @@ const handleCheckoutSubmit = async (event) => {
     const submitBtn = checkoutForm.querySelector('button[type="submit"]');
     if (submitBtn)
         submitBtn.disabled = true;
+    const productsTotal = getCartTotalPrice();
+    const actualDeliveryCost = getDeliveryCost(productsTotal);
+    const totalWithDelivery = productsTotal + actualDeliveryCost;
     try {
         const response = await fetch(API_URL, {
             method: "POST",
@@ -289,7 +313,9 @@ const handleCheckoutSubmit = async (event) => {
                 parcelLockerCode: parcelLocker,
                 notes: notes || undefined,
                 items: cart,
-                total: getCartTotalPrice(),
+                productsTotal,
+                deliveryCost: actualDeliveryCost,
+                total: totalWithDelivery,
                 paymentMethod: selectedPaymentMethod,
                 createOptionalAccount: wantsOptionalAccount,
                 optionalAccountEmail: wantsOptionalAccount ? optionalEmail || undefined : undefined,
@@ -488,10 +514,25 @@ function renderMiniCartList() {
     trustNote.className = "cart-trust-note";
     trustNote.textContent = "Świeża produkcja, klasyczny smak, bez konserwantów.";
     cartList.appendChild(trustNote);
-    const cartTotal = document.createElement("div");
-    cartTotal.className = "cart-summary";
-    cartTotal.textContent = `Razem do zapłaty: ${totalPrice} zł`;
-    cartList.appendChild(cartTotal);
+    // Breakdown: produkty + dostawa + razem
+    const actualDeliveryCost = getDeliveryCost(totalPrice);
+    const totalWithDelivery = totalPrice + actualDeliveryCost;
+    const cartSummary = document.createElement("div");
+    cartSummary.className = "cart-summary";
+    const productsLine = document.createElement("div");
+    productsLine.className = "cart-summary-line";
+    productsLine.innerHTML = `<span>Produkty (galaretki):</span><span>${totalPrice} zł</span>`;
+    const deliveryLine = document.createElement("div");
+    deliveryLine.className = "cart-summary-line";
+    const deliveryText = actualDeliveryCost === 0 ? "<strong>Gratis!</strong>" : `${actualDeliveryCost} zł`;
+    deliveryLine.innerHTML = `<span>Dostawa (InPost Paczkomat):</span><span>${deliveryText}</span>`;
+    const totalLine = document.createElement("div");
+    totalLine.className = "cart-summary-total";
+    totalLine.innerHTML = `<span>Razem do zapłaty:</span><span>${totalWithDelivery} zł</span>`;
+    cartSummary.appendChild(productsLine);
+    cartSummary.appendChild(deliveryLine);
+    cartSummary.appendChild(totalLine);
+    cartList.appendChild(cartSummary);
     // Przycisk wyczyść koszyk
     const clearBtn = document.createElement("button");
     clearBtn.className = "cart-clear-btn";

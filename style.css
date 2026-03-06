@@ -510,9 +510,35 @@ button:active {
   margin-top: 10px;
   padding-top: 12px;
   border-top: 2px solid var(--color-border);
+  font-size: 16px;
+  color: var(--color-primary);
+}
+
+.cart-summary-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.cart-summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0 6px;
+  margin-top: 6px;
+  border-top: 1px solid var(--color-border);
   font-size: 18px;
   font-weight: 800;
   color: var(--color-primary);
+}
+
+.checkout-cost-breakdown {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
 }
 
 .cart-item-controls {

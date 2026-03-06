@@ -156,6 +156,7 @@ body {
   margin-bottom: 18px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(3px);
+  cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
 }
 

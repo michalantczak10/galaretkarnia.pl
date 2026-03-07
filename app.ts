@@ -151,9 +151,9 @@ const animate = (el: HTMLElement, cls: string) => {
 };
 
 // Funkcja wyświetlania toast notyfikacji
-const showToast = (message: string) => {
+const showToast = (message: string, type: "default" | "success" = "default") => {
   const toast = document.createElement("div");
-  toast.className = "toast toast-show";
+  toast.className = `toast toast-show ${type === "success" ? "toast-success" : ""}`.trim();
   toast.textContent = message;
   document.body.appendChild(toast);
   
@@ -631,7 +631,7 @@ const clearCart = () => {
   if (confirm("Na pewno chcesz wyczyścić cały koszyk?")) {
     cart = [];
     renderCart();
-    showToast("Koszyk wyczyszczony");
+    showToast("✨ Koszyk został wyczyszczony", "success");
   }
 };
 

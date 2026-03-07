@@ -262,6 +262,10 @@ body {
   margin: 40px auto;
 }
 
+.checkout {
+  margin-bottom: 56px;
+}
+
 .about h2,
 .product h2,
 .checkout h2,
@@ -998,6 +1002,11 @@ button:active {
 
 .toast-show {
   transform: translateX(-50%) translateY(0);
+}
+
+.toast-success {
+  background: var(--color-primary-dark);
+  border: 1px solid var(--color-accent);
 }
 
 /* ===== MEDIA QUERIES ===== */

@@ -143,8 +143,8 @@ galaretkarnia.pl/
 ├── style.css               # Style CSS
 ├── package.json            # Konfiguracja npm
 ├── tsconfig.json           # Konfiguracja TypeScript
-├── img/                    # Obrazy produktów
-├── favicon/                # Ikony strony
+├── img/                    # Obrazy strony (produkty, hero, zespół, branding)
+├── favicon/                # Ikony strony + manifest PWA
 └── server/                 # Backend (Node.js + Express)
     ├── server.mjs          # API serwera
     ├── .env                # Zmienne środowiska (lokalne)

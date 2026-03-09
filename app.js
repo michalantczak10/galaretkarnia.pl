@@ -599,17 +599,23 @@ function renderMiniCartList() {
     cartSummary.appendChild(deliveryLine);
     cartSummary.appendChild(totalLine);
     cartList.appendChild(cartSummary);
-    // Przycisk wyczyść koszyk
+    // Przycisk wyczyść koszyk i zamów - umieszczone obok siebie
+    const actions = document.createElement("div");
+    actions.className = "cart-actions";
+
     const clearBtn = document.createElement("button");
     clearBtn.className = "cart-clear-btn";
     clearBtn.textContent = "Wyczyść koszyk";
     clearBtn.addEventListener("click", clearCart);
-    cartList.appendChild(clearBtn);
+
     const checkoutBtn = document.createElement("button");
     checkoutBtn.className = "cart-checkout-btn";
     checkoutBtn.textContent = "Zamawiam teraz";
     checkoutBtn.addEventListener("click", scrollToCheckout);
-    cartList.appendChild(checkoutBtn);
+
+    actions.appendChild(clearBtn);
+    actions.appendChild(checkoutBtn);
+    cartList.appendChild(actions);
 }
 // Przeliczanie koszyka
 function renderCart() {

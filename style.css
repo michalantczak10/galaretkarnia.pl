@@ -23,6 +23,53 @@
     max-width: 100%;
   }
 }
+
+/* Cart-specific actions: make buttons side-by-side and compact */
+.cart-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.cart-actions .cart-clear-btn,
+.cart-actions .cart-checkout-btn {
+  width: auto;
+  flex: 1 1 auto;
+  margin-top: 0;
+}
+
+/* Force side-by-side actions on very small screens as requested */
+@media (max-width: 600px) {
+  .cart-actions {
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+  .cart-actions .cart-clear-btn,
+  .cart-actions .cart-checkout-btn {
+    width: auto;
+    flex: 1 1 auto;
+  }
+}
+
+/* Extra small screens (<=440px): reduce gaps and button padding */
+@media (max-width: 440px) {
+  .cart-actions {
+    gap: 6px;
+  }
+  .cart-actions .cart-clear-btn,
+  .cart-actions .cart-checkout-btn {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .cart-actions .cart-clear-btn {
+    margin-right: 6px;
+  }
+}
+.cart-actions .cart-clear-btn {
+  margin-right: 8px;
+}
 /* ===== ZMIENNE CSS ===== */
 
 :root {
@@ -123,6 +170,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   background: var(--color-bg);
+  font-size: 15px; /* slightly smaller overall */
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -460,8 +508,8 @@ button:active {
 .cart-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  padding: 10px;
   background: var(--color-white);
   border-radius: var(--radius-md);
   margin-bottom: 12px;
@@ -469,8 +517,8 @@ button:active {
 }
 
 .cart-item img {
-  width: 55px;
-  height: 55px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-sm);
   object-fit: contain;
 }
@@ -481,7 +529,7 @@ button:active {
 
 .cart-item-name {
   font-weight: bold;
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .cart-item-details {
@@ -613,10 +661,10 @@ button:active {
 }
 
 .cart-item-qty {
-  min-width: 20px;
+  min-width: 18px;
   text-align: center;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .cart-clear-btn {
@@ -663,6 +711,7 @@ button:active {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
+ 
 
 /* ===== BENEFITS (3 POWODY) ===== */
 .benefits {

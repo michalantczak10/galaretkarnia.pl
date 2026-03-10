@@ -604,12 +604,17 @@ function renderMiniCartList() {
     clearBtn.className = "cart-clear-btn";
     clearBtn.textContent = "Wyczyść koszyk";
     clearBtn.addEventListener("click", clearCart);
-    cartList.appendChild(clearBtn);
+    // Group action buttons so they appear side-by-side
     const checkoutBtn = document.createElement("button");
     checkoutBtn.className = "cart-checkout-btn";
     checkoutBtn.textContent = "Zamawiam teraz";
     checkoutBtn.addEventListener("click", scrollToCheckout);
-    cartList.appendChild(checkoutBtn);
+
+    const actions = document.createElement("div");
+    actions.className = "checkout-actions-row cart-actions";
+    actions.appendChild(clearBtn);
+    actions.appendChild(checkoutBtn);
+    cartList.appendChild(actions);
 }
 // Przeliczanie koszyka
 function renderCart() {

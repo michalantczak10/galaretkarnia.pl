@@ -4,6 +4,11 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { MongoClient, ObjectId } from 'mongodb';
+import compression from 'compression';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import morgan from 'morgan';
+import responseTime from 'response-time';
 
 dotenv.config();
 
@@ -13,6 +18,7 @@ const PORT = process.env.PORT || 3001;
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/galaretkarnia';
 let ordersCollection;
+let mongoClient = null;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -54,7 +60,7 @@ async function connectToDatabase({ maxRetries = 5, initialDelay = 1000 } = {}) {
 }
 
 // Try connecting on startup (non-fatal on failure)
-await connectToDatabase();
+mongoClient = await connectToDatabase();
 
 // Get directory path
 const __filename = fileURLToPath(import.meta.url);
@@ -62,17 +68,36 @@ const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '..');
 
 // Middleware
-// CORS - explicit handling for all origins (MUST be before routes and json middleware)
+// Security & performance middleware (before routes)
+app.use(helmet());
+app.use(compression());
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(responseTime());
+
+// Rate limiter for API
+const apiLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use('/api', apiLimiter);
+
+// CORS and caching - allow caching for static assets, disable cache for API
 app.use((req, res, next) => {
   const origin = '*';
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.setHeader('Access-Control-Max-Age', '3600');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  
+
+  // Only disable caching for API responses
+  if (req.path.startsWith('/api') || req.path.startsWith('/server')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -80,10 +105,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
+// Limit request body size to avoid huge payloads
+app.use(express.json({ limit: '64kb' }));
 
-// Serve static files from project root
-app.use(express.static(projectRoot));
+// Serve static files from `public` directory inside the server folder
+const publicDir = join(__dirname, 'public');
+app.use(express.static(publicDir, { maxAge: '7d', immutable: true, dotfiles: 'ignore', index: false }));
+
+// Serve images and favicons from project root via dedicated routes (keeps other files private)
+app.use('/img', express.static(join(projectRoot, 'img'), { maxAge: '7d', immutable: true, dotfiles: 'ignore' }));
+app.use('/favicon', express.static(join(projectRoot, 'favicon'), { maxAge: '7d', immutable: true, dotfiles: 'ignore' }));
 
 // Email configuration - Resend API (optional)
 let resend = null;
@@ -452,11 +483,39 @@ app.get('/api/health', (req, res) => {
 
 // Serve index.html for all routes (SPA support)
 app.get('*', (req, res) => {
-  res.sendFile(join(projectRoot, 'index.html'));
+  // Serve SPA from public directory
+  res.sendFile(join(publicDir, 'index.html'));
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Galaretkarnia API running on port ${PORT}`);
   console.log(`📧 Orders will be sent to: ${process.env.ORDER_EMAIL || 'kontakt@galaretkarnia.pl'}`);
 });
+
+// Graceful shutdown - close Mongo client and HTTP server
+const shutdown = async () => {
+  console.log('Shutting down gracefully...');
+  try {
+    if (mongoClient) {
+      await mongoClient.close();
+      console.log('✅ MongoClient closed');
+    }
+  } catch (err) {
+    console.error('Error closing MongoClient:', err?.message || err);
+  }
+
+  server.close(() => {
+    console.log('✅ HTTP server closed');
+    process.exit(0);
+  });
+
+  // Force exit if not closed in time
+  setTimeout(() => {
+    console.error('Forcing shutdown');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);

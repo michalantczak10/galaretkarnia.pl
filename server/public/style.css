@@ -835,7 +835,6 @@ button:active {
   box-shadow: var(--shadow-md);
 }
  
-
 /* ===== BENEFITS (3 POWODY) ===== */
 .benefits {
   max-width: 1200px;
@@ -1606,7 +1605,7 @@ button:active {
   .checkout-layout {
     padding: 0 20px;
   }
-
+  
   .checkout-form,
   .checkout-summary {
     padding: 15px;
@@ -1655,3 +1654,5 @@ button:active {
     font-size: 24px;
   }
 }
+
+

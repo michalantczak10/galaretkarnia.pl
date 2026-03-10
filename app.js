@@ -636,12 +636,16 @@ addButtons.forEach(btn => {
             return;
         }
         // Szukamy produktu w koszyku
-        const existing = cart.find(item => item.name === name);
-        if (existing) {
-            existing.qty++;
+        const existingIndex = cart.findIndex(item => item.name === name);
+        if (existingIndex !== -1) {
+            // Zwiększ ilość i przenieś pozycję na początek (dynamiczne ustawianie)
+            cart[existingIndex].qty++;
+            const [item] = cart.splice(existingIndex, 1);
+            cart.unshift(item);
         }
         else {
-            cart.push({ name, price, qty: 1, image });
+            // Dodaj nową pozycję na początek listy
+            cart.unshift({ name, price, qty: 1, image });
         }
         renderCart();
         if (window.innerWidth <= 767) {

@@ -787,6 +787,11 @@ addButtons.forEach(btn => {
     }
 
     renderCart();
+    // Po dodaniu produktu przewiń do sekcji hero (płynnie)
+    const heroSection = document.querySelector<HTMLElement>(".hero");
+    if (heroSection) {
+      heroSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     if (window.innerWidth <= 767) {
       miniCart.scrollIntoView({ behavior: "smooth", block: "center" });
     }

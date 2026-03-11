@@ -491,8 +491,8 @@ button:active {
 
 /* ===== MINI KOSZYK ===== */
 .cart-dock {
-  position: sticky;
-  top: 24px;
+  position: static;
+  top: auto;
   width: min(1200px, calc(100% - 80px));
   margin: 24px auto 16px;
   z-index: 995;

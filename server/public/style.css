@@ -1310,6 +1310,9 @@ button:active {
 }
 .page-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
+/* Ensure CTA inside contact card has visible text (higher specificity) */
+.privacy-contact .page-btn { color: var(--color-white); text-decoration: none; }
+
 /* ===== TOAST NOTIFICATIONS ===== */
 .toast {
   position: static;

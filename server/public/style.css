@@ -1218,6 +1218,44 @@ button:active {
   gap: 20px; /* slightly larger gap for breathing room */
 }
 
+/* ===== LEGAL / REGULAMIN / PRIVACY ===== */
+.legal {
+  padding: 18px 16px;
+  max-width: 1200px;
+  margin: 24px auto;
+  background: var(--color-accent);
+  border-radius: var(--radius-lg);
+}
+
+.legal h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.legal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 800px) {
+  .legal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.legal p {
+  margin: 0 0 12px;
+  color: var(--color-text);
+}
+
+.legal a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
 .trust p {
   background: var(--color-white);
   border-radius: var(--radius-lg);

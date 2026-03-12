@@ -4,6 +4,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 16px;
   margin-bottom: 8px;
 }
@@ -20,6 +21,7 @@
     flex-direction: column;
     gap: 10px;
     align-items: stretch;
+    flex-wrap: wrap;
   }
 
   .checkout-actions-row button {
@@ -925,6 +927,24 @@ button:active {
 .checkout-actions-row .cart-checkout-btn,
 .checkout-actions-row .secondary-clear-btn {
   margin-top: 0;
+}
+
+/* Force buttons to sit inline and share height on larger screens */
+.checkout-actions-row button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  padding: 12px 18px;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .checkout-actions-row button {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+  }
 }
  
 /* ===== BENEFITS (3 POWODY) ===== */

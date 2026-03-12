@@ -152,6 +152,17 @@ const showToast = (message, type = "default", actionLabel, actionCallback) => {
         }, 300);
     }, TOAST_DURATION);
 };
+
+// Dismiss any existing toast whose message contains the provided text
+const dismissToastContaining = (text) => {
+    document.querySelectorAll('.toast').forEach(t => {
+        const msgEl = t.querySelector('.toast-message');
+        const msg = msgEl ? (msgEl.textContent || '') : '';
+        if (msg.indexOf(text) !== -1) {
+            if (t.parentElement) t.parentElement.removeChild(t);
+        }
+    });
+};
 const setCheckoutMessage = (message, isError) => {
     checkoutMessage.innerHTML = message;
     checkoutMessage.classList.remove("is-error", "is-success");
@@ -784,7 +795,12 @@ addButtons.forEach(btn => {
         else if (window.innerWidth <= 767) {
             miniCart.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-        showToast(`${name} dodany do koszyka!`);
+                // If a 'cart cleared' message/toast is present, dismiss it when adding a new item
+                dismissToastContaining("Koszyk został wyczyszczony");
+                if (checkoutMessage.innerHTML.indexOf("Koszyk został wyczyszczony") !== -1) {
+                    setCheckoutMessage("", false);
+                }
+                showToast(`${name} dodany do koszyka!`);
     });
 });
 openParcelSearchBtn.addEventListener("click", () => {

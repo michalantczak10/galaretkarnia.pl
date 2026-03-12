@@ -193,6 +193,17 @@ const showToast = (
   }, TOAST_DURATION);
 };
 
+// Dismiss any existing toast whose message contains the provided text
+const dismissToastContaining = (text: string) => {
+  document.querySelectorAll('.toast').forEach(t => {
+    const msgEl = t.querySelector('.toast-message');
+    const msg = msgEl ? (msgEl.textContent || '') : '';
+    if (msg.includes(text)) {
+      if (t.parentElement) t.parentElement.removeChild(t);
+    }
+  });
+};
+
 const setCheckoutMessage = (message: string, isError: boolean) => {
   checkoutMessage.innerHTML = message;
   checkoutMessage.classList.remove("is-error", "is-success");
@@ -881,6 +892,11 @@ addButtons.forEach(btn => {
       window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     } else if (window.innerWidth <= 767) {
       miniCart.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    // If a 'cart cleared' message/toast is present, dismiss it when adding a new item
+    dismissToastContaining("Koszyk został wyczyszczony");
+    if (checkoutMessage.innerHTML.includes("Koszyk został wyczyszczony")) {
+      setCheckoutMessage("", false);
     }
     showToast(`${name} dodany do koszyka!`);
   });

@@ -139,6 +139,8 @@ Skrypt `scripts/generate-favicons.cjs` konwertuje wektorowe `img/branding/logo-g
 
 Wymagania: zainstalowane pakiety `sharp` i `to-ico`.
 
+Uwaga: skrypt został przeniesiony do `tools/generate-favicons/`.
+
 Uruchom lokalnie:
 ```bash
 # w katalogu projektu

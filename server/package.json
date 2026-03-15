@@ -6,16 +6,22 @@
   "main": "server.mjs",
   "scripts": {
     "start": "node server.mjs",
-    "dev": "node --watch server.mjs"
+    "dev": "node --watch server.mjs",
+    "nodemon": "nodemon server.mjs"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "compression": "^1.7.4",
-    "helmet": "^7.0.0",
     "express-rate-limit": "^7.0.0",
+    "helmet": "^7.0.0",
+    "mongodb": "^7.1.0",
     "morgan": "^1.10.0",
+    "resend": "^6.9.3",
     "response-time": "^2.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   },
   "engines": {
     "node": ">=18.0.0"
